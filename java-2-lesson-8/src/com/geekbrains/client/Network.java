@@ -3,15 +3,17 @@ package com.geekbrains.client;
 import com.geekbrains.CommonConstants;
 import com.geekbrains.server.ServerCommandConstants;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.Array;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Network {
     private Socket socket;
     private DataInputStream inputStream;
     private DataOutputStream outputStream;
+    private static BufferedReader fileReader;
+    private static ArrayList<String> memory = new ArrayList<>();
 
     private final ChatController controller;
 
@@ -41,6 +43,7 @@ public class Network {
                             }
                         } else {
                             controller.displayMessage(messageFromServer);
+
                         }
                     }
                 } catch (IOException exception) {
@@ -65,7 +68,7 @@ public class Network {
         }
     }
 
-    public boolean sendAuth(String login, String password) {
+    public boolean sendAuth(String login, String password)  {
         try {
             if (socket == null || socket.isClosed()) {
                 initializeNetwork();
@@ -74,6 +77,7 @@ public class Network {
 
             boolean authenticated = inputStream.readBoolean();
             if (authenticated) {
+                readChatHistory();
                 startReadServerMessages();
             }
             return authenticated;
@@ -95,6 +99,24 @@ public class Network {
         }
 
         System.exit(1);
+    }
+    public void readChatHistory() throws IOException {
+        fileReader = new BufferedReader(new FileReader("C:/Users/Aleh/Desktop/new_folder/java-2-lesson-8/src/com/geekbrains/client/chat_history.txt"));
+        String line;
+        int current = 0;
+        while ((line = fileReader.readLine()) != null) {
+            memory.add(line);
+            current++;
+        }
+        if (current<=100){
+            for (int i = current; i > 0; i--){
+                controller.displayMessage(memory.get(i));
+            }
+        }else{
+            for (int i = current; i >= current - 100; i--) {
+                controller.displayMessage(memory.get(i));
+            }
+        }
     }
 
 }

@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -72,7 +73,7 @@ public class ChatController implements Initializable {
     }
 
 
-    public void sendAuth(ActionEvent event) {
+    public void sendAuth(ActionEvent event) throws IOException {
         boolean authenticated = network.sendAuth(loginField.getText(), passwordField.getText());
         if(authenticated) {
             loginField.clear();
