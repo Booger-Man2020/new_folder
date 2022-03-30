@@ -4,6 +4,7 @@ import com.geekbrains.server.authorization.JdbcConnector;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
 
 public class ClientHandler {
     private final Server server;
@@ -18,14 +19,14 @@ public class ClientHandler {
         return nickName;
     }
 
-    public ClientHandler(Server server, Socket socket) {
+    public ClientHandler(Server server, Socket socket, ExecutorService executorService) {
         try {
             this.server = server;
             this.socket = socket;
             this.inputStream = new DataInputStream(socket.getInputStream());
             this.outputStream = new DataOutputStream(socket.getOutputStream());
             this.fileWriter = new BufferedWriter(new FileWriter("C:/Users/Aleh/Desktop/new_folder/java-2-lesson-8/src/com/geekbrains/client/chat_history.txt", true));
-            new Thread(new Runnable() {
+            executorService.execute (new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -35,7 +36,7 @@ public class ClientHandler {
                         exception.printStackTrace();
                     }
                 }
-            }).start();
+            });
         } catch (IOException exception) {
             throw new RuntimeException("Проблемы при создании обработчика");
         }

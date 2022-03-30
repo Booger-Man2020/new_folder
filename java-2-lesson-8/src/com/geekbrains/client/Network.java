@@ -109,7 +109,7 @@ public class Network {
             current++;
         }
         if (current<=100){
-            for (int i = current; i > 0; i--){
+            for (int i = current-1; i >= 0; i--){
                 controller.displayMessage(memory.get(i));
             }
         }else{

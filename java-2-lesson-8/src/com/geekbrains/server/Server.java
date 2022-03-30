@@ -10,13 +10,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server {
     private final AuthService authService;
+    private final ExecutorService executorService;
 
     private List<ClientHandler> connectedUsers;
 
     public Server() {
+        executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         authService = new InMemoryAuthServiceImpl();
         try (ServerSocket server = new ServerSocket(CommonConstants.SERVER_PORT)) {
             authService.start();
@@ -25,7 +30,7 @@ public class Server {
                 System.out.println("Сервер ожидает подключения");
                 Socket socket = server.accept();
                 System.out.println("Клиент подключился");
-                new ClientHandler(this, socket);
+                new ClientHandler(this, socket, executorService);
                 JdbcConnector.connection();
             }
         } catch (IOException exception) {
