@@ -1,15 +1,17 @@
 package com.geekbrains.server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import com.geekbrains.server.authorization.JdbcConnector;
+
+import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
 
 public class ClientHandler {
     private final Server server;
     private final Socket socket;
     private final DataInputStream inputStream;
     private final DataOutputStream outputStream;
+    private final BufferedWriter fileWriter;
 
     private String nickName;
 
@@ -17,13 +19,14 @@ public class ClientHandler {
         return nickName;
     }
 
-    public ClientHandler(Server server, Socket socket) {
+    public ClientHandler(Server server, Socket socket, ExecutorService executorService) {
         try {
             this.server = server;
             this.socket = socket;
             this.inputStream = new DataInputStream(socket.getInputStream());
             this.outputStream = new DataOutputStream(socket.getOutputStream());
-            new Thread(new Runnable() {
+            this.fileWriter = new BufferedWriter(new FileWriter("C:/Users/Aleh/Desktop/new_folder/java-2-lesson-8/src/com/geekbrains/client/chat_history.txt", true));
+            executorService.execute (new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -33,7 +36,7 @@ public class ClientHandler {
                         exception.printStackTrace();
                     }
                 }
-            }).start();
+            });
         } catch (IOException exception) {
             throw new RuntimeException("Проблемы при создании обработчика");
         }
@@ -75,10 +78,14 @@ public class ClientHandler {
                 closeConnection();
                 return;
             }
-
             server.broadcastMessage(nickName + ": " + messageInChat);
+                fileWriter.write(nickName + ": " + messageInChat);
+                fileWriter.append("\n");
+
         }
     }
+
+
 
     public void sendMessage(String message) {
         try {
@@ -95,6 +102,8 @@ public class ClientHandler {
             outputStream.close();
             inputStream.close();
             socket.close();
+            JdbcConnector.disconnect();
+            fileWriter.close();
         } catch (IOException exception) {
             exception.printStackTrace();
         }

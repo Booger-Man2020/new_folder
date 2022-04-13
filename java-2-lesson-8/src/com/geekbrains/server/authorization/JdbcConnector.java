@@ -19,8 +19,9 @@ public class JdbcConnector {
             connect();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            // disconnect();
+//        } finally {
+//            // disconnect();
+//        }
         }
     }
 
