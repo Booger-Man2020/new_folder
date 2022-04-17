@@ -4,6 +4,7 @@ import com.geekbrains.CommonConstants;
 import com.geekbrains.server.authorization.AuthService;
 import com.geekbrains.server.authorization.InMemoryAuthServiceImpl;
 import com.geekbrains.server.authorization.JdbcConnector;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,14 +14,17 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.logging.log4j.LogManager;
 
 public class Server {
     private final AuthService authService;
     private final ExecutorService executorService;
+    private final static Logger LOGGER = LogManager.getLogger(Server.class.getClass());
 
     private List<ClientHandler> connectedUsers;
 
     public Server() {
+        LOGGER.info("INFO");
         executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         authService = new InMemoryAuthServiceImpl();
         try (ServerSocket server = new ServerSocket(CommonConstants.SERVER_PORT)) {

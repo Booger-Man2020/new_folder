@@ -26,7 +26,7 @@ public class JdbcConnector {
     }
 
     private static void connect() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:sqlite:C:/Users/Aleh/Desktop/new_folder/java-2-lesson-8/src/com/geekbrains/users.db");
+        connection = DriverManager.getConnection("jdbc:sqlite:C:/Users/Aleh/IdeaProjects/chat/java-2-lesson-8/src/com/geekbrains/users.db");
         statement = connection.createStatement();
     }
 
